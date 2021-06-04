@@ -1,0 +1,11 @@
+# static content for visualizer app
+app/
+
+# experiment data
+data/
+
+# config
+config.json
+
+# node
+node_modules

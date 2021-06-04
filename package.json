@@ -1,0 +1,15 @@
+{
+    "name": "experiment-manager",
+    "version": "0.0.1",
+    "description": "A Node.js plattform to run online experiments with the AlgoVisualizer",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "type": "module",
+    "author": "Alexander Bazo <alexanderbazo@googlemail.com>",
+    "license": "MIT",
+    "dependencies": {
+        "express": "^4.17.1"
+    }
+}
