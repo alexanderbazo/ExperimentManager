@@ -1,10 +1,19 @@
 {
-    "id": "1234567890",
-    "state": "open",
-    "startedAt": null,
-    "conditions": ["base", "step-through"],
-    "currentParticipant": null,
-    "results": {
-        "data": null
-    }
+   "id":"1234567890",
+   "state":"open",
+   "startedAt":null,
+   "conditions":[
+      {
+         "mode":"base",
+         "algorithm":"bubble-sort"
+      },
+      {
+         "mode":"step-through",
+         "algorithm":"quick-sort"
+      }
+   ],
+   "currentParticipant":null,
+   "results":{
+      "data":null
+   }
 }

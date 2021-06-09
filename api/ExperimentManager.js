@@ -2,7 +2,6 @@
 
 import fs from "fs";
 import path from "path";
-import { start } from "repl";
 import Config from "../utils/Config.js";
 
 let experiments;
@@ -22,13 +21,25 @@ function updateExperimentOnDisk(experiment) {
     let filePath = path.join(Config.dataDir, experiment.id + ".json"),
         experimentAsJSON = JSON.stringify(experiment);
     fs.writeFileSync(filePath, experimentAsJSON);
+    if (experiment.state === "closed") {
+        let targetPath = path.join(Config.resultsDir, experiment.id + ".json");
+        fs.copyFileSync(filePath, targetPath);
+        fs.unlinkSync(filePath);
+        for (let i = 0; i < experiments.length; i++) {
+            if (experiments[i].id === experiment.id) {
+                experiments.splice(i, 1);
+                return new ExperimentMessage(`Experiment ${experiment.id} closed and moved to storage.`);
+            }
+        }
+    }
+    return new ExperimentMessage(`Experiment ${experiment.id} updated.`);
 }
 
 /**
  * Resets the given experiment in the live array ("experiments") and on disk so that it can be reused
  * by another participant
  */
-function resetExperiment(id) {
+function resetExperimentWidthID(id) {
     let foundExperiments = experiments.filter(experiment => experiment.id === id);
     if (foundExperiments.length !== 0) {
         foundExperiments[0].state = "open";
@@ -37,8 +48,9 @@ function resetExperiment(id) {
         foundExperiments[0].results = {
             data: null,
         };
-        updateExperimentOnDisk(foundExperiments[0]);
+        return updateExperimentOnDisk(foundExperiments[0]);
     }
+    return new ExperimentError(`Unknown ID, could not reset experiment for ${id}`);
 }
 
 class Experiment {
@@ -61,9 +73,17 @@ class Experiment {
 
 class ExperimentError {
 
+    constructor(error) {
+        this.error = error;
+        Object.freeze(this);
+    }
+}
+
+class ExperimentMessage {
+
     constructor(msg) {
         this.msg = msg;
-        Object.freeze(msg);
+        Object.freeze(this);
     }
 }
 
@@ -76,7 +96,9 @@ class ExperimentManager {
 
     /**
      * Returns a currently not used and not yet finished experiment by
-     * randomly picking one while trying to balance the different conditions
+     * randomly picking one while trying to balance the different conditions.
+     * 
+     * Before returning, the picked experiment's state will be changed to "in-use".
      */
     pickRandomExperiment() {
         let availableExperiments, pick;
@@ -95,11 +117,23 @@ class ExperimentManager {
     }
 
     /**
+     * 
+     * Returns the experiment, identified by the given id, without changing its state
+     */
+    getExperiment(id) {
+        let foundExperiments = experiments.filter(experiment => experiment.id === id);
+        if (foundExperiments.length !== 0) {
+            return foundExperiments[0];
+        }
+        return new ExperimentError(`Could not retrieve experiment for ${id}`);
+    }
+
+    /**
      * Resets the state of the given experiments so that it can be reused by another
      * participant. 
      */
-    putBackExperiment(experiment) {
-
+    putBackExperiment(id) {
+        return resetExperimentWidthID(id);
     }
 
     /**
@@ -107,7 +141,8 @@ class ExperimentManager {
      * stored experiment will not be available to other participants. 
      */
     storeExperimentResults(experiment) {
-
+        experiment.state = "closed";
+        return updateExperimentOnDisk(experiment);
     }
 
 }
