@@ -33,7 +33,8 @@ function onRandomExperimentRequested(request, response) {
 }
 
 function onExperimentsResultsSend(request, response) {
-    response.json({ msg: "Not yet implemented" });
+    let result = ExperimentManager.storeExperimentResults(request.body);
+    response.json(result);
 }
 
 function onExperimentCanceled(request, response) {
