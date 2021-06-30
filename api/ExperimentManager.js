@@ -4,6 +4,8 @@ import fs from "fs";
 import path from "path";
 import Config from "../utils/Config.js";
 
+const CONDITIONS = ["step-through", "data", "speed"];
+
 let experiments;
 
 function loadExperimentsFromDisk(dataPath) {
@@ -109,11 +111,26 @@ class ExperimentManager {
         if (availableExperiments.length === 0) {
             return new ExperimentError("No open experiment currently available");
         }
-        pick = availableExperiments[Math.floor(Math.random() * availableExperiments.length)];
+        pick = this.pickRandomExperimentWithConditionBias(availableExperiments);
         pick.state = "in-use";
         pick.startedAt = Date.now();
         updateExperimentOnDisk(pick);
         return pick;
+    }
+
+    pickRandomExperimentWithConditionBias(availableExperiments) {
+        let filteredExperiments = {},
+            experimentsForPick;
+        CONDITIONS.forEach(condition => filteredExperiments[condition] = availableExperiments.filter(experiment => experiment.conditions[1].mode === condition));
+        experimentsForPick = filteredExperiments[CONDITIONS[0]];
+        for (let i = 1; i < CONDITIONS.length; i++) {
+            let condition = CONDITIONS[i],
+                experimentsForConditions = filteredExperiments[condition];
+            if (experimentsForConditions.length > experimentsForPick.length) {
+                experimentsForPick = experimentsForConditions;
+            }
+        }
+        return experimentsForPick[Math.floor(Math.random() * experimentsForPick.length)];
     }
 
     /**
