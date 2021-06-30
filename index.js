@@ -16,7 +16,7 @@ function startServer() {
     app.use(express.json());
     app.use(express.static(Config.appDir));
     app.use("/app", express.static(Config.appDir));
-    app.get("/update", onClientUpdateRequested);
+    app.post("/update", onClientUpdateRequested);
     app.get("/api/experiment/:id", onExperimentRequested);
     app.get("/api/experiment/:id/cancel", onExperimentCanceled);
     app.get("/api/experiment/:id/close", onExperimentsResultsSend);
