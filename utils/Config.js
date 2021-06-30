@@ -11,6 +11,7 @@ class Config {
         this.appDir = values.appDir;
         this.dataDir = values.dataDir;
         this.resultsDir = values.resultsDir;
+        this.updateScript = values.updateScript;
         Object.freeze(this);
     }
 

@@ -2,5 +2,6 @@
     "port": 8001,
     "appDir": "app",
     "dataDir": "data/open",
-    "resultsDir": "data/done"
+    "resultsDir": "data/done",
+    "updateScript": "update.sh"
 }

@@ -1,6 +1,6 @@
 /* eslint-env node */
 
-import bodyParser from "body-parser";
+import { exec } from "child_process";
 import express from "express";
 import Config from "./utils/Config.js";
 import ExperimentManager from "./api/ExperimentManager.js";
@@ -13,13 +13,20 @@ function start() {
 
 function startServer() {
     app = express();
-    app.use(bodyParser.json());
+    app.use(express.json());
     app.use(express.static(Config.appDir));
+    app.use("/app", express.static(Config.appDir));
+    app.get("/update", onClientUpdateRequested);
     app.get("/api/experiment/:id", onExperimentRequested);
     app.get("/api/experiment/:id/cancel", onExperimentCanceled);
     app.get("/api/experiment/:id/close", onExperimentsResultsSend);
     app.get("/api/experiments/random", onRandomExperimentRequested);
     app.listen(Config.port);
+}
+
+function onClientUpdateRequested(request, response) {
+    setImmediate(() => exec(Config.updateScript));
+    response.json({ msg: "Trying to update client code, server will now shutdown ..." });
 }
 
 function onExperimentRequested(request, response) {
