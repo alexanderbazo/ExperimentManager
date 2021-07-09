@@ -154,10 +154,17 @@ class ExperimentManager {
     }
 
     /**
+     * Updates the given experiment on disk without changing its state
+     */
+    updateExperimentData(experiment) {
+        return updateExperimentOnDisk(experiment);
+    }
+
+    /**
      * Marks the given experiment as done an stores it results for further analysis. The 
      * stored experiment will not be available to other participants. 
      */
-    storeExperimentResults(experiment) {
+    closeExperiment(experiment) {
         experiment.state = "closed";
         return updateExperimentOnDisk(experiment);
     }
