@@ -12,6 +12,8 @@ class Config {
         this.dataDir = values.dataDir;
         this.resultsDir = values.resultsDir;
         this.updateScript = values.updateScript;
+        this.idleExperimentsCheckInterval = values.idleExperimentsCheckInterval;
+        this.experimentResetTime = values.experimentResetTime;
         Object.freeze(this);
     }
 

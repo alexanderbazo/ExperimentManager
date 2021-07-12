@@ -3,5 +3,7 @@
     "appDir": "app",
     "dataDir": "data/open",
     "resultsDir": "data/done",
-    "updateScript": "update.sh"
+    "updateScript": "update.sh",
+    "idleExperimentsCheckInterval": 15,
+    "experimentResetTime": 60
 }
